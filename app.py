@@ -138,5 +138,37 @@ def delete_courier(id: uuid.UUID):
     return '', 204
 
 
+@app.get('/deliveries/find_by_title')
+def get_delivery_by_title():
+    title = request.args.get('title')
+
+    query = SQL("""
+select id, title, phone
+from delivery_crud.delivery
+where title ilike {title}
+""").format(title=Literal('%' + title + '%'))
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        result = cursor.fetchall()
+
+    return result
+
+
+@app.get('/deliveries/find_by_phone')
+def get_delivery_by_phone():
+    phone = request.args.get('phone')
+    query = SQL("""
+select id, title, phone
+from delivery_crud.delivery
+where phone ilike {phone}
+""").format(phone=Literal('%' + phone + '%'))
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        result = cursor.fetchall()
+
+    return result
+
 if __name__ == '__main__':
     app.run(port=os.getenv('FLASK_PORT'))
